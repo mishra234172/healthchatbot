@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HealthBot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px 28px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    input:focus {
+      border-color: #43a047;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #43a047;
+      color: white;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #388e3c;
+    }
+
+    .loading {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #777;
+      text-align: center;
+      display: none;
+    }
+
+    .output {
+      margin-top: 18px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 14px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      color: #333;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h2>💚 HealthBot</h2>
+    <p class="subtitle">
+      Ask health-related questions powered by AI + real-time web search
+    </p>
+
+    <input id="q" placeholder="e.g. Hair fall causes, diabetes symptoms..." />
+    <button onclick="ask()">Ask HealthBot</button>
+
+    <div class="loading" id="loading">🔍 Fetching trusted health info...</div>
+
+    <div class="output" id="out"></div>
+
+    <footer>
+      Built using AI • For educational purposes only
+    </footer>
+  </div>
+
+<script>
+async function ask() {
+  const q = document.getElementById("q").value.trim();
+  if (!q) return;
+
+  document.getElementById("out").innerText = "";
+  document.getElementById("loading").style.display = "block";
+
+  try {
+    const res = await fetch("http://localhost:8000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: q })
+    });
+
+    const data = await res.json();
+    document.getElementById("out").innerText =
+      "🤖 AI Response:\n" + data.ai +
+      "\n\n🩺 Summary:\n" + data.summary;
+
+  } catch (err) {
+    document.getElementById("out").innerText =
+      "⚠️ Error connecting to HealthBot server.";
+  } finally {
+    document.getElementById("loading").style.display = "none";
+  }
+}
+</script>
+</body>
+</html>
